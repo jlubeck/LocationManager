@@ -958,6 +958,10 @@ BOOL INTUCLHeadingIsIsValid(CLHeading *heading)
     self.updateFailed = YES;
 
     for (INTULocationRequest *locationRequest in self.locationRequests) {
+     if (!locationRequest.hasTimedOut && error.code == 0 && [error.domain isEqualToString:kCLErrorDomain]){
+      // Keep the request alive if locationRequest has not timed out.
+      INTULMLog(@"Location services error with error_code 0: %@", [error localizedDescription]);
+     } else {
         if (locationRequest.isRecurring) {
             // Keep the recurring request alive
             [self processRecurringRequest:locationRequest];
@@ -965,6 +969,7 @@ BOOL INTUCLHeadingIsIsValid(CLHeading *heading)
             // Fail any non-recurring requests
             [self completeLocationRequest:locationRequest];
         }
+      }
     }
 }
 
